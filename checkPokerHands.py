@@ -1,5 +1,5 @@
 # pylint: disable=W
-from ChinesePoker import *
+from ChinesePoker import Card
 import random
 import unittest
 
@@ -14,6 +14,7 @@ numCards = [5, 5, 3]
 
 # poker_hand = {'Straight flush': 9, 'Four of a kind': 8, 'Full house': 7, 'Flush': 6,
 #               'Straight': 5, 'Three of a kind': 4, 'Two pair': 3, 'One pair': 2, 'High card': 1}
+
 
 def compareHands(hand1, hand2):
     score1 = getScore(hand1)

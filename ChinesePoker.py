@@ -1,6 +1,9 @@
+# pylint: disable=W
+
 import os
 import random
 import unittest
+
 
 numPlayers = 2
 # suits_symbols = ['♠', '♦', '♥', '♣']
@@ -30,7 +33,8 @@ class Card(object):
     def __eq__(self, other):
         return self.rank == other.rank and self.suit == other.suit
 
-
+# class HelperFunction(object):
+#     def __init__(self)
 def create_deck():
     Deck = []
     for s in suits:
@@ -86,13 +90,14 @@ class Game(object):
             name = input("Enter the name of Player " + str(_i+1) + ": ")
             hand = dealHand(deck)
             self.Players.append(Player(name, hand))
-        print('\n', self.Players[0].name, "will start first!")
-        input("Press enter to start playing...\n")
 
     def play(self):
         j = 0
 
-        while True:
+        for _k in range(2):
+            print("\nIt's {}'s turn now".format(self.Players[j].name))
+            input("Hit enter to continue...\n")
+
             print(self.Players[j].name + "'s cards are: ")
             print(print_cards(self.Players[j].hand))
             hand1 = self.Players[j].hand
@@ -108,20 +113,25 @@ class Game(object):
                     for other in hand1:
                         if card == other:
                             hand1.remove(other)
-                print("\nYour remaining cards are: " + print_cards(self.Players[j].hand))
+                print("\nYour remaining cards are: " +
+                      print_cards(self.Players[j].hand))
                 self.Players[j].groups.append(arr2)
             self.Players[j].groups.append(hand1)
             print("\nYour three groups are: ")
             print(print_groups(self.Players[j].groups))
-            input("Hit enter to continue...")
+            input("Hit enter to move to the other player...")
 
-            if j==1:
+            if j == 1:
                 j = 0
             else:
-                j+=1
-            os.system("cls")
-            print("It's {}'s turn now".format(self.Players[j].name))
-            input("Hit enter to continue...")
+                j += 1
+            os.system("clear")
+        
+        
+    def compare():
+        compareHands(self.Players[0].groups[0], self.Players[1].groups[0])
+        print("Game over")
+    
 
 class UnitTest(unittest.TestCase):
     def test_create_deck(self):
