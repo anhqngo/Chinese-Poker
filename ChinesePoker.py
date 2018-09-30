@@ -1,19 +1,18 @@
 # pylint: disable=W
 # -*- coding: utf-8 -*-
+#!/usr/bin/python
+
 import os
 import random
 import unittest
 import pokertest
+import pokertest_threeCards
 
-
-numPlayers = 2
-# suits_symbols = ['♠', '♦', '♥', '♣']
-# suits = ['Clubs', 'Diamonds', 'Hearts', 'Spades']
+suits_symbols = ['♠', '♦', '♥', '♣']
 suits = ['C', 'D', 'H', 'S']
 ranks = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
 rank_value = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7,
               '8': 8, '9': 9, 'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14}
-
 
 class Player(object):
     def __init__(self, name, hand):
@@ -36,6 +35,8 @@ class Card(object):
 
 # class HelperFunction(object):
 #     def __init__(self)
+
+
 def create_deck():
     Deck = []
     for s in suits:
@@ -57,28 +58,35 @@ def dealHand(deck):
 def print_cards(hand):
     s = ""
     for card in hand:
-        s += " " + str(card)
+        s += str(card) + " "
     return s
 
+def beautify(hand):
+    handList = hand.split()
+    beautify_string = ''
+    for card in handList:
+        if card[0] == 'T':
+            rank = '10'
+        else:
+            rank = card[0]
+        beautify_string +=  rank + suits_symbols[suits.index(card[1])] + " "
+    return beautify_string.rstrip()
 
 def get_card_from_input(user_input):
     deck = create_deck()
-    if len(user_input) > 2:
-        print("Not a valid input!")
-        print("Proper input example: 2H or KC")
+    user_input = user_input.upper().rstrip()
+
+    if len(user_input) == 3 and user_input[:2] == '10':
+        user_input = 'T' + user_input[-1]
+    elif len(user_input) == 2:
+        pass
+    else:
         return None
+
     for item in deck:
         if (item.rank == user_input[0]) and (item.suit == user_input[1]):
             return item
     return None
-
-
-def print_groups(groups):
-    newGroup = []
-    for group in groups:
-        newGroup.append(print_cards(group))
-    return newGroup
-
 
 class Game(object):
     def __init__(self):
@@ -87,67 +95,112 @@ class Game(object):
 
         deck = create_deck()
 
-        for _i in range(numPlayers):
+        for _i in range(self.numPlayers):
             name = raw_input("Enter the name of Player " + str(_i+1) + ": ")
             hand = dealHand(deck)
             self.Players.append(Player(name, hand))
 
     def play(self):
         j = 0
-
         for _k in range(2):
             print("\nIt's {}'s turn now".format(self.Players[j].name))
             raw_input("Hit enter to continue...\n")
 
             print(self.Players[j].name + "'s cards are: ")
-            print(print_cards(self.Players[j].hand))
+            print(beautify(print_cards(self.Players[j].hand)))
             hand1 = self.Players[j].hand
 
             for _i in range(2):
-                group = raw_input(
-                    "Enter {} cards that you want to be in group {}: ".format(5, _i+1))
-                arr = group.split()
-                # print(arr)
-                arr2 = [get_card_from_input(i) for i in arr]
-                # print(arr2)
+                valid = False
 
-                for card in arr2:
-                    for other in hand1:
-                        if card == other:
-                            hand1.remove(other)
-                print("\nYour remaining cards are: " +
-                      print_cards(self.Players[j].hand))
+                while valid==False:
+                    group = raw_input("Enter {} cards that you want to be in group {}: ".format(5, _i+1))
+                    arr = group.split()
+                    arr2 = [get_card_from_input(i) for i in arr]
+                    try:
+                        assert(len(arr2) == 5)
+                        for card in arr2:
+                            assert(card in hand1)
+                        valid = True
+                    except:
+                        print("\nThe program could not find in your hand one or more of the cards that you just provided")
+                        print("This error is probably caused by a typo. Please try again.")
+                        print("Remember, please type in 5 cards, separated by a white space.\n")
+                        print("Again, your hand is: " + beautify(print_cards(self.Players[j].hand)))
+                        continue
+                    
+                    for card in arr2:
+                        for other in hand1:
+                            if card == other:
+                                hand1.remove(other)
+
+                print("\nYour remaining cards are: " + beautify(print_cards(self.Players[j].hand)))
                 self.Players[j].groups.append(arr2)
+
             self.Players[j].groups.append(hand1)
             print("\nYour three groups are: ")
-            print(print_groups(self.Players[j].groups))
-            raw_input("Hit enter to move to the other player...")
+            for group in self.Players[j].groups:
+                print(beautify(print_cards(group)))
+
+            if _k == 1:
+                raw_input("Hit enter to see the results for the rounds!")
+            else:
+                raw_input("Hit enter to move to the other player...")
 
             if j == 1:
                 j = 0
             else:
                 j += 1
-            os.system("clear")
 
-        self.compare()
+            #consider one-line if-else statement
+            if os.name == 'nt':
+                os.system("cls") # Windows
+            else:
+                os.system("clear") # Unix
 
+        winner = self.compare()
+
+        print("The winner is: " + winner.name)
         print("Game over")
 
+    def isValidInput(self, string, numOfCards):
+        num = numOfCards
+        u_input = string
         
+
     def compare(self):
-        for i in range(2):
+        for i in range(3):
             hand1 = print_cards(self.Players[0].groups[i])
             hand2 = print_cards(self.Players[1].groups[i])
-            winnerIndex = pokertest.poker([hand1, hand2])
-            if winnerIndex == 0:
-                self.Players[0].score += 1
+
+            if i != 2:
+                winnerIndex = pokertest.poker([hand1, hand2])
+                if winnerIndex == 0:
+                    self.Players[0].score += 1
+                else:
+                    self.Players[1].score += 1
             else:
-                self.Players[1].score += 1
-        
+                winnerIndex = pokertest_threeCards.poker([hand1, hand2])
+                if winnerIndex == 0:
+                    self.Players[0].score += 1
+                elif winnerIndex == 1:
+                    self.Players[1].score += 1
+
+            ordinal = ['first', 'second', 'third']
+
+            print("The cards for the {} round are: ".format(ordinal[i]))
+            print(hand1 + "\tand\t" + hand2)
+            if winnerIndex == None:
+                print("It's a tie")
+            else:
+                print("The one whose hand is higher is " +
+                      self.Players[winnerIndex].name + "\n")
+            raw_input("Hit enter to see the next result")
+
         if self.Players[0].score > self.Players[1].score:
-            print("The winner is: " + self.Players[0].name)
+            return self.Players[0]
         else:
-            print("The winner is: " + self.Players[1].name)
+            return self.Players[1]
 
 
 class UnitTest(unittest.TestCase):
@@ -161,8 +214,13 @@ class UnitTest(unittest.TestCase):
     def test_get_card_from_input(self):
         self.assertEqual(get_card_from_input("2H"), Card("2", "H"))
 
+    def test_beautify(self):
+        self.assertEqual(beautify('2H 4C 9S TH'), '2♥ 4♠ 9♣ T♥')
 
 if __name__ == '__main__':
-    # unittest.main()
-    g = Game()
-    g.play()
+    i = 1
+    if i == 0:
+        unittest.main()
+    else:
+        g = Game()
+        g.play()
