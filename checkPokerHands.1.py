@@ -10,7 +10,6 @@ suits = ['C', 'D', 'H', 'S']
 ranks = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
 rank_value = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7,
               '8': 8, '9': 9, 'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14}
-numCards = [5, 5, 3]
 
 # poker_hand = {'Straight flush': 9, 'Four of a kind': 8, 'Full house': 7, 'Flush': 6,
 #               'Straight': 5, 'Three of a kind': 4, 'Two pair': 3, 'One pair': 2, 'High card': 1}
@@ -27,6 +26,7 @@ class PokerRankings(object):
         self.rankSet = set(self.rankList)
 
         self.highCard = 0 # the card used to determine the winner should two hands have the same score
+        self.nextHighCard = 0
 
     def isStraightFlush(self):
         self.highCard = max(self.rankList)
@@ -93,10 +93,19 @@ class PokerRankings(object):
         return False
 
     def isTwoPair(self):
-        
+        rank_shortList = sorted(list(self.rankSet))[::-1]
+
+        for rank in rank_shortList:
+            if self.rankList.count(rank) == 2:
+                if self.highCard == 0:
+                    self.highCard = rank
+                else:
+                    self.nextHighCard = rank
+
         return len(self.rankSet) == 3
 
     def isPair(self):
+        
         return len(self.rankSet) == 4
 
     def getScore(self):
@@ -132,7 +141,7 @@ def compareHands(hand1, hand2):
     elif score1 < score2:
         return (0,1)
     else:
-        if score1 == 7:     #handle full house separately
+        #if score1 == 7:     #handle full house separately
         if max(ranking1.rankList) > max(ranking1.rankList):
             print("hand1")
         else:
