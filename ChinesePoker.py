@@ -1,8 +1,9 @@
 # pylint: disable=W
-
+# -*- coding: utf-8 -*-
 import os
 import random
 import unittest
+import pokertest
 
 
 numPlayers = 2
@@ -12,7 +13,6 @@ suits = ['C', 'D', 'H', 'S']
 ranks = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
 rank_value = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7,
               '8': 8, '9': 9, 'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14}
-numCards = [5, 5, 3]
 
 
 class Player(object):
@@ -20,6 +20,7 @@ class Player(object):
         self.name = name
         self.hand = hand
         self.groups = []
+        self.score = 0
 
 
 class Card(object):
@@ -87,7 +88,7 @@ class Game(object):
         deck = create_deck()
 
         for _i in range(numPlayers):
-            name = input("Enter the name of Player " + str(_i+1) + ": ")
+            name = raw_input("Enter the name of Player " + str(_i+1) + ": ")
             hand = dealHand(deck)
             self.Players.append(Player(name, hand))
 
@@ -96,14 +97,15 @@ class Game(object):
 
         for _k in range(2):
             print("\nIt's {}'s turn now".format(self.Players[j].name))
-            input("Hit enter to continue...\n")
+            raw_input("Hit enter to continue...\n")
 
             print(self.Players[j].name + "'s cards are: ")
             print(print_cards(self.Players[j].hand))
             hand1 = self.Players[j].hand
+
             for _i in range(2):
-                group = input(
-                    "Enter {} cards that you want to be in group {}: ".format(numCards[_i], _i+1))
+                group = raw_input(
+                    "Enter {} cards that you want to be in group {}: ".format(5, _i+1))
                 arr = group.split()
                 # print(arr)
                 arr2 = [get_card_from_input(i) for i in arr]
@@ -119,19 +121,34 @@ class Game(object):
             self.Players[j].groups.append(hand1)
             print("\nYour three groups are: ")
             print(print_groups(self.Players[j].groups))
-            input("Hit enter to move to the other player...")
+            raw_input("Hit enter to move to the other player...")
 
             if j == 1:
                 j = 0
             else:
                 j += 1
             os.system("clear")
-        
-        
-    def compare():
-        compareHands(self.Players[0].groups[0], self.Players[1].groups[0])
+
+        self.compare()
+
         print("Game over")
-    
+
+        
+    def compare(self):
+        for i in range(2):
+            hand1 = print_cards(self.Players[0].groups[i])
+            hand2 = print_cards(self.Players[1].groups[i])
+            winnerIndex = pokertest.poker([hand1, hand2])
+            if winnerIndex == 0:
+                self.Players[0].score += 1
+            else:
+                self.Players[1].score += 1
+        
+        if self.Players[0].score > self.Players[1].score:
+            print("The winner is: " + self.Players[0].name)
+        else:
+            print("The winner is: " + self.Players[1].name)
+
 
 class UnitTest(unittest.TestCase):
     def test_create_deck(self):
@@ -149,16 +166,3 @@ if __name__ == '__main__':
     # unittest.main()
     g = Game()
     g.play()
-
-
-# class Move(object):
-#     pass
-
-# class Game(object):
-#     def __init__(self, players):
-
-
-# def main():
-
-# if __name__ == "__main__":
-#     main()
