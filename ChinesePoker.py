@@ -145,8 +145,6 @@ class Game(object):
         else:
             return self.Players[1]
 
-# Non-class Functions:
-
 
 def create_deck():
     Deck = []
