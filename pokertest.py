@@ -1,6 +1,3 @@
-"""
-
-"""
 
 def poker(hands):
     scores = [(i, score(hand.split())) for i, hand in enumerate(hands)]
@@ -20,7 +17,3 @@ def score(hand):
         '''no pair, straight, flush, or straight flush'''
         score = ([1, (3, 1, 1, 1)], [(3, 1, 1, 2), (5,)])[flush][straight]
     return score, ranks
-
-# assert(poker(['8C TS KC 9H 4S', '7D 2S 5D 3S AC', '8C AD 8D AC 9C', '7C 5H 8D TD KS'])==2)
-
-# assert(poker(['4H 4C 4D 3S 3D', '3H 3D 5C 5S 9S'])==0)
