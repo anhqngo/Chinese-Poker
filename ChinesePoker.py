@@ -1,4 +1,4 @@
-
+import os
 import random
 import unittest
 
@@ -11,8 +11,6 @@ rank_value = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7,
               '8': 8, '9': 9, 'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14}
 numCards = [5, 5, 3]
 
-poker_hand = {'Straight flush': 9, 'Four of a kind': 8, 'Full house': 7, 'Flush': 6,
-              'Straight': 5, 'Three of a kind': 4, 'Two pair': 3, 'One pair': 2, 'High card': 1}
 
 class Player(object):
     def __init__(self, name, hand):
@@ -92,28 +90,38 @@ class Game(object):
         input("Press enter to start playing...\n")
 
     def play(self):
-        print(self.Players[0].name + "'s cards are: ")
-        print(print_cards(self.Players[0].hand))
-        hand1 = self.Players[0].hand
-        for _i in range(2):
-            group = input(
-                "Enter {} cards that you want to be in group {}: ".format(numCards[_i], _i+1))
-            arr = group.split()
-            # print(arr)
-            arr2 = [get_card_from_input(i) for i in arr]
-            # print(arr2)
+        j = 0
 
-            for card in arr2:
-                for other in hand1:
-                    if card == other:
-                        hand1.remove(other)
-            print("\nYour remaining cards are: " +
-                  print_cards(self.Players[0].hand))
-            self.Players[0].groups.append(arr2)
-        self.Players[0].groups.append(hand1)
-        print("\nYour three groups are: ")
-        print(print_groups(self.Players[0].groups))
+        while True:
+            print(self.Players[j].name + "'s cards are: ")
+            print(print_cards(self.Players[j].hand))
+            hand1 = self.Players[j].hand
+            for _i in range(2):
+                group = input(
+                    "Enter {} cards that you want to be in group {}: ".format(numCards[_i], _i+1))
+                arr = group.split()
+                # print(arr)
+                arr2 = [get_card_from_input(i) for i in arr]
+                # print(arr2)
 
+                for card in arr2:
+                    for other in hand1:
+                        if card == other:
+                            hand1.remove(other)
+                print("\nYour remaining cards are: " + print_cards(self.Players[j].hand))
+                self.Players[j].groups.append(arr2)
+            self.Players[j].groups.append(hand1)
+            print("\nYour three groups are: ")
+            print(print_groups(self.Players[j].groups))
+            input("Hit enter to continue...")
+
+            if j==1:
+                j = 0
+            else:
+                j+=1
+            os.system("cls")
+            print("It's {}'s turn now".format(self.Players[j].name))
+            input("Hit enter to continue...")
 
 class UnitTest(unittest.TestCase):
     def test_create_deck(self):
@@ -126,8 +134,9 @@ class UnitTest(unittest.TestCase):
     def test_get_card_from_input(self):
         self.assertEqual(get_card_from_input("2H"), Card("2", "H"))
 
+
 if __name__ == '__main__':
-    #unittest.main()
+    # unittest.main()
     g = Game()
     g.play()
 
