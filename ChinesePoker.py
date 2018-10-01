@@ -1,4 +1,3 @@
-# pylint: disable=W
 # -*- coding: utf-8 -*-
 #!/usr/bin/python
 
@@ -62,13 +61,13 @@ class Game(object):
                 while valid == False:
                     group = raw_input(
                         "Enter {} cards that you want to be in group {}: ".format(5, _i+1))
-                    arr = group.split()
-                    arr2 = [get_card_from_input(i) for i in arr]
+                    inputArr = group.split()
+                    cardArr = [get_card_from_input(i) for i in inputArr]
                     try:
-                        assert(len(arr2) == 5)
-                        for card in arr2:
+                        assert(len(cardArr) == 5)
+                        for card in cardArr:
                             assert(card in hand)
-                            assert(arr2.count(card) == 1)
+                            assert(cardArr.count(card) == 1)
                         valid = True
                     except:
                         print(
@@ -81,16 +80,16 @@ class Game(object):
                               beautify(print_cards(hand)))
                         continue
 
-                    for card in arr2:
+                    for card in cardArr:
                         for other in hand:
                             if card == other:
                                 hand.remove(other)
 
-                print("\nYour remaining cards are: " +
-                      beautify(print_cards(hand)))
-                self.Players[j].groups.append(arr2)
+                print("\nYour remaining cards are: " + beautify(print_cards(hand)))
+                self.Players[j].groups.append(cardArr)
 
             self.Players[j].groups.append(hand)
+
             print("\nYour three groups are: ")
             for group in self.Players[j].groups:
                 print(beautify(print_cards(group)))
@@ -100,29 +99,25 @@ class Game(object):
             else:
                 raw_input("Hit enter to move to the other player...")
 
-            os.system("cls") if os.name == 'nt' else os.system("clear")
+            os.system("cls") if os.name == 'nt' else os.system("clear") #clear
 
         winner = self.compare()
 
         print("The winner is: " + winner.name)
         print("Game over")
 
-    def isValidInput(self, string, numOfCards):
-        num = numOfCards
-        u_input = string
-
     def compare(self):
         for i in range(3):
             hand1 = print_cards(self.Players[0].groups[i])
             hand2 = print_cards(self.Players[1].groups[i])
 
-            if i != 2:
+            if i != 2: # the first two hands
                 winnerIndex = pokertest.poker([hand1, hand2])
                 if winnerIndex == 0:
                     self.Players[0].score += 1
                 else:
                     self.Players[1].score += 1
-            else:
+            else: # last hand
                 winnerIndex = pokertest_threeCards.poker([hand1, hand2])
                 if winnerIndex == 0:
                     self.Players[0].score += 1
@@ -224,8 +219,7 @@ class UnitTest(unittest.TestCase):
             ['4H 4C 4D', '3H 3D 3C']), 0)
         self.assertEqual(pokertest_threeCards.poker(
             ['AC QC KD', '3H 3D 4C']), 1)
-
-
+    
 if __name__ == '__main__':
     i = 1  # Change it to 0 to test
     if i == 0:
